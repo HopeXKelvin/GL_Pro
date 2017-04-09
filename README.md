@@ -21,9 +21,9 @@ webgl+leapmotion->project
 
     + 安装Express,并将其保存到依赖列表中：
 
-    ```npm install express --save```
+      ```npm install express --save```
 
-    如果只是临时安装Express,不想将它添加到依赖列表中,只需要去掉 --save参数即可(本项目中需要将其添加到依赖列表中)
+      如果只是临时安装Express,不想将它添加到依赖列表中,只需要去掉 --save参数即可(本项目中需要将其添加到依赖列表中)
 
     + 在根目录下创建app.js文件,里面写入控制整个项目的路由跳转的代码
 
@@ -31,39 +31,39 @@ webgl+leapmotion->project
 
     + Express应用生成器
 
-    通过生成器工具可以快速创建一个express应用的骨架
+      通过生成器工具可以快速创建一个express应用的骨架
 
-    安装express生成器指令：```npm install express-generator -g```
+      安装express生成器指令：```npm install express-generator -g```
 
-    生成项目的指令：```express myapp```(会在当前目录下创建一个名为myapp的应用)
+      生成项目的指令：```express myapp```(会在当前目录下创建一个名为myapp的应用)
 
-    接下来进入myapp路径下,使用 ```npm install```安装所有依赖
+      接下来进入myapp路径下,使用 ```npm install```安装所有依赖
 
-    安装好所有以来之后,启动项目：
+      安装好所有以来之后,启动项目：
 
-    ```$ DEBUG=myapp npm start```(Mac或Linux平台)
+      ```$ DEBUG=myapp npm start```(Mac或Linux平台)
 
-    ```> set DEBUG=myapp & npm start```(windows平台)
+      ```> set DEBUG=myapp & npm start```(windows平台)
 
-    利用这个工具生成的项目的目录结构有一定的参考性.
+      利用这个工具生成的项目的目录结构有一定的参考性.
 
     + Express托管静态文件
 
-    Express内置有express.static可以用于设置静态文件读取路径,方便托管.
+      Express内置有express.static可以用于设置静态文件读取路径,方便托管.
 
-    假设静态文件在dist文件夹下面,则可以使用以下代码指定目录
+      假设静态文件在dist文件夹下面,则可以使用以下代码指定目录
 
-    ```javascript
-    app.use(express.static('public'));
-    ```
+      ```javascript
+      app.use(express.static('public'));
+      ```
 
-    还可以设置一个虚拟目录
+      还可以设置一个虚拟目录
 
-    ```javascript
-    app.use('/static',express.static('public'));
-    ```
+      ```javascript
+      app.use('/static',express.static('public'));
+      ```
 
-    这样就可以通过/static路径代替public了
+      这样就可以通过/static路径代替public了
 
 - 后端使用express默认的jade模板引擎进行页面的渲染(页面放在了views文件夹下)
 

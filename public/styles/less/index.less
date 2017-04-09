@@ -1,0 +1,28 @@
+@base:#eee;
+.base-border{
+  border: 1px solid #ddd;
+}
+.base-link{
+  text-decoration: none;
+  color: #aaa;
+  font-family: "Microsoft Yahei";
+}
+
+body{
+  background-color: @base;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list{
+  list-style: none;
+}
+
+.nav-item{
+  padding: 5px;
+  .base-border;
+}
+
+.nav-item>a{
+  .base-link;
+}

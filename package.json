@@ -1,0 +1,28 @@
+{
+  "name": "gl_pro",
+  "version": "1.0.0",
+  "description": "webgl+leapmotion->project",
+  "main": "app.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HopeXKelvin/GL_Pro.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HopeXKelvin/GL_Pro/issues"
+  },
+  "homepage": "https://github.com/HopeXKelvin/GL_Pro#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "jade": "^1.11.0"
+  },
+  "devDependencies": {
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
