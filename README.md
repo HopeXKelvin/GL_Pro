@@ -9,6 +9,8 @@ webgl+leapmotion->project
 
 - 前端：vue.js+three.js+webpack
 
+- 数据库：mysql
+
 - 其他：使用blender建模,使用leap motion进行VR的操作
 
 ### 后台环境搭建
@@ -39,7 +41,7 @@ webgl+leapmotion->project
 
       接下来进入myapp路径下,使用 ```npm install```安装所有依赖
 
-      安装好所有以来之后,启动项目：
+      安装好所有依赖之后,启动项目：
 
       ```$ DEBUG=myapp npm start```(Mac或Linux平台)
 
@@ -95,3 +97,15 @@ webgl+leapmotion->project
   + 安装:```npm install --save-dev  webpack```
 
 - three.js
+
+### 系统说明
+
+- 实现一个在web端可以进行交互的3D架子鼓鼓谱制作的系统
+
+- 可以在线录制鼓谱,记录用户的敲击顺序,频率,并可以生成鼓谱(初期是生成一个简单格式的数字鼓谱)
+
+- 可以在用户个人的文件库中选择播放列表,播放对应的鼓谱.(此处把鼓谱变成简单的数字序列,存储数字序列,播放的时候直接用数字序列来播放音频)
+
+- 基于webgl创建一个真实性很强的3D架子鼓场景,用leap motion来进行架子鼓的敲击
+
+- 暂定以下几个模式：1.制作模式 2.播放模式 3.跟打模式
