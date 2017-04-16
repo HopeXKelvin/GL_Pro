@@ -9,8 +9,10 @@ var server = app.listen(port,function(){
   console.log('Project listening at http://%s:%s',host,port);
 });
 
-//配置静态文件路径
-app.use('/static',express.static('dist'));
+//配置静态文件路径(设置多个静态文件路径)
+// app.use('/static',express.static('dist'));
+app.use('/static',express.static('public'));
+
 // 指定加载的模板以及模板引擎
 app.set('views','./views');
 app.set('view engine','jade');
