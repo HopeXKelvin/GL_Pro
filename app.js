@@ -26,3 +26,8 @@ app.get('/',function(req,res){
 app.get('/drumdisplay',function(req,res){
   res.render('drum_display');
 });
+
+// 测试leap motion的页面
+app.get('/lm_test',function(req,res){
+  res.render('lm_test');
+});

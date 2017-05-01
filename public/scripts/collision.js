@@ -1,6 +1,6 @@
 // 全局变量
 var scene,camera,drumObj,renderer;
-var geometry, material,mesh,stickMesh,raycaster,mouse,isMove,drum,cylinder,drum_group;
+var geometry, material,mesh,leftStickMesh,rightStickMesh,raycaster,mouse,isMove,drum,cylinder,drum_group,leapController;
 var drumAudioList = ["static/assets/audio/drum_01.mp3"];
 
 var INTERSECTED;
@@ -48,12 +48,16 @@ function init(){
   mesh.name = "cube";
   // scene.add(mesh);
   // stick
-  var stickRadius = 100;
+  var stickRadius = 10;
   var geometry = new THREE.CylinderGeometry(stickRadius,stickRadius,200,20);
   var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-  stickMesh = new THREE.Mesh(geometry,material);
-  stickMesh.name = "stick";
-  // scene.add(stickMesh);
+  var rgeometry = new THREE.CylinderGeometry(stickRadius,stickRadius,200,20);
+  var rmaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+  leftStickMesh = new THREE.Mesh(geometry,material);
+  rightStickMesh = new THREE.Mesh(rgeometry,rmaterial);
+  leftStickMesh.name = "stick";
+  scene.add(leftStickMesh);
+  scene.add(rightStickMesh);
 
   // 加入场景
   var regionR = 700;
@@ -109,9 +113,9 @@ function init(){
           drum = object;
           drum.name = "drum";
           // drum.children[0].geometry.center()
-          drum.scale.x = 200;
-          drum.scale.y = 200;
-          drum.scale.z = 200;
+          drum.scale.x = 150;
+          drum.scale.y = 150;
+          drum.scale.z = 150;
           // drum.rotation.y =2.3;
           // position.x = 1000;
           // drum.position.x = 0;
@@ -132,6 +136,63 @@ function init(){
           window.scene = scene;
           window.camera = camera;
           window.drum = drum;
+
+          var box = new THREE.Mesh(
+            new THREE.BoxGeometry(60,60,30), // mm
+            new THREE.MeshPhongMaterial({color: 0xffff00})
+          );
+
+          box.castShadow = true;
+          box.receiveShadow = true;
+
+          var collider = new THREE.Mesh(new THREE.PlaneGeometry(59,59));
+          collider.position.set(0, 140, 0);
+
+          collider.add(box);
+          scene.add(collider);
+
+          leapController = Leap.loop()
+            .use('proximity')
+            .use('handHold')
+            .use('handEntry')
+            .use('screenPosition')
+            .use('boneHand', {
+              targetEl: document.body,
+              arm: true,
+              scene: scene,
+              render: function(){
+                renderer.render(scene, camera)
+              }
+            }).on('frame',function(frame){
+              var hands = frame.hands;
+              if(hands != null && hands.length > 0){
+                for(var i=0;i<hands.length;i++){
+                  console.log(hands[i]);
+                  var type = hands[i].type;
+                  var posArr = hands[i].palmPosition;
+                  var vec3 = new THREE.Vector3(posArr[0],posArr[1],posArr[2]);
+                  // vec3.unproject(camera);
+                  var grabStrength = hands[i].grabStrength;
+                  console.log(hands[i].grabStrength);
+                  if(grabStrength >= 0.95){
+                    console.log(type);
+                    if(type == "left"){
+                      leftStickMesh.position.copy(vec3);
+                      leftStickMesh.rotation.x = -Math.PI/3;
+                    }else if(type == "right"){
+                      rightStickMesh.position.copy(vec3);
+                      rightStickMesh.rotation.x = -Math.PI/3;
+                    }
+                    // var temp=new THREE.Object3D();
+                    // temp.add(leftStickMesh);
+                    // temp.rotation.y=Math.PI/4;
+                  }
+                }
+              }
+            });
+
+          new InteractablePlane(collider, Leap.loopController);
+          console.log(leapController);
       }, onProgress, onError);
   });
   /*************************************************************************/
@@ -142,41 +203,47 @@ function animate(){
   mesh.rotation.x += 0.01;
   mesh.rotation.y += 0.02;
   // cylinder.rotation.x += 0.01;
+  var once = false;
   if(drum){
-    // drum.rotation.x += 0.02;
-    // drum.rotation.y += 0.02;
+    if(leapController && !once){
+      // console.log(leapController);
+      // console.log(leapController.plugins);
+      once = true;
+    }
+
+    //console.log(leapController.plugins.boneHand);
   }
 
   // console.log(mouse);
   raycaster.setFromCamera(mouse,camera);
 
   /**
-   * 检测stickMesh 与场景中的其他物体是否发生了碰撞
+   * 检测leftStickMesh 与场景中的其他物体是否发生了碰撞
    *
    */
-  //  var originPoint = stickMesh.position.clone();
-   //
-  //  for(var vertextIndex = 0;vertextIndex<stickMesh.geometry.vertices.length;vertextIndex++){
-  //    // 顶点的原始坐标
-  //    var localVertext = stickMesh.geometry.vertices[vertextIndex].clone();
-  //    // 顶点经过变换后的坐标
-  //    var globalVertext = localVertext.applyMatrix4(stickMesh.matrix);
-  //    // 获取由stickMesh指向定点的向量
-  //    var directionVector = globalVertext.sub(stickMesh.position);
-   //
-  //    // 将方向向量初始化
-  //    var ray = new THREE.Raycaster(originPoint,directionVector.clone().normalize());
-  //    // 检测射线与多个物体的相交情况
-  //    if(scene.children[3] != undefined){
-  //      var collisionResults = ray.intersectObjects(scene.children[3].children);
-  //      if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.name != "stick"){
-  //       //  console.log(collisionResults);
-  //       //  console.log(collisionResults[0].object);
-  //       //  collisionResults[0].object.material.materials[2].color.set(0xff0000);
-  //       //  console.log("crash");
-  //      }
-  //    }
-  //  }
+   var originPoint = leftStickMesh.position.clone();
+
+   for(var vertextIndex = 0;vertextIndex<leftStickMesh.geometry.vertices.length;vertextIndex++){
+     // 顶点的原始坐标
+     var localVertext = leftStickMesh.geometry.vertices[vertextIndex].clone();
+     // 顶点经过变换后的坐标
+     var globalVertext = localVertext.applyMatrix4(leftStickMesh.matrix);
+     // 获取由leftStickMesh指向定点的向量
+     var directionVector = globalVertext.sub(leftStickMesh.position);
+
+     // 将方向向量初始化
+     var ray = new THREE.Raycaster(originPoint,directionVector.clone().normalize());
+     // 检测射线与多个物体的相交情况
+     if(scene.children[3] != undefined){
+       var collisionResults = ray.intersectObjects(scene.children[3].children);
+       if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.name != "stick"){
+        //  console.log(collisionResults);
+        //  console.log(collisionResults[0].object);
+        //  collisionResults[0].object.material.materials[2].color.set(0xff0000);
+        //  console.log("crash");
+       }
+     }
+   }
 
   var intersects = raycaster.intersectObjects(drum.children);
   // console.log(intersects.length);
@@ -222,7 +289,7 @@ EventList.prototype.mouseMove = function(event){
   console.log("mouse move");
   event.preventDefault;
   var mouse = convertTo3DCoordinate(event.clientX,event.clientY);
-  stickMesh.position.copy(mouse);
+  leftStickMesh.position.copy(mouse);
 };
 // 设置二维鼠标坐标轴的值
 EventList.prototype.setMouse2D = function(event){
