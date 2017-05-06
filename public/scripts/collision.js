@@ -2,6 +2,7 @@
 var scene,camera,drumObj,renderer;
 var geometry, material,mesh,leftStickMesh,rightStickMesh,raycaster,mouse,isMove,drum,cylinder,drum_group,leapController;
 var drumAudioList = ["static/assets/audio/drum_01.mp3"];
+// window.controls = new THREE.TrackballControls(camera);
 
 var INTERSECTED;
 
@@ -26,6 +27,38 @@ var audioDomList = (function(){
   }
   return domList;
 })();
+
+(window.controller = new Leap.Controller)
+    .use('transform', {
+      position: new THREE.Vector3(1, 0, 0)
+    })
+    .use('handHold',{})
+    .use('screenPosition')
+    .use('handEntry',{})
+    .use('riggedHand', {
+      parent : scene,
+      renderFn : function(){
+        // renderer.render(scene,camera);
+        // return controls.update();
+      },
+      materialOptions : {
+        wireframe: getParam('wireframe'),
+        color : new THREE.Color(0xff0000)
+      },
+      offset : new THREE.Vector3(0,0,0),
+      scale : 0.2,
+      boneLabels: function(boneMesh, leapHand) {
+        return boneMesh.name
+      }
+  }).connect();
+
+// 应该是一个工具函数
+function getParam(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+};
 
 function init(){
   // 场景
@@ -151,45 +184,50 @@ function init(){
           collider.add(box);
           scene.add(collider);
 
-          leapController = Leap.loop()
-            .use('proximity')
-            .use('handHold')
-            .use('handEntry')
-            .use('screenPosition')
-            .use('boneHand', {
-              targetEl: document.body,
-              arm: true,
-              scene: scene,
-              render: function(){
-                renderer.render(scene, camera)
-              }
-            }).on('frame',function(frame){
-              var hands = frame.hands;
-              if(hands != null && hands.length > 0){
-                for(var i=0;i<hands.length;i++){
-                  console.log(hands[i]);
-                  var type = hands[i].type;
-                  var posArr = hands[i].palmPosition;
-                  var vec3 = new THREE.Vector3(posArr[0],posArr[1],posArr[2]);
-                  // vec3.unproject(camera);
-                  var grabStrength = hands[i].grabStrength;
-                  console.log(hands[i].grabStrength);
-                  if(grabStrength >= 0.95){
-                    console.log(type);
-                    if(type == "left"){
-                      leftStickMesh.position.copy(vec3);
-                      leftStickMesh.rotation.x = -Math.PI/3;
-                    }else if(type == "right"){
-                      rightStickMesh.position.copy(vec3);
-                      rightStickMesh.rotation.x = -Math.PI/3;
-                    }
-                    // var temp=new THREE.Object3D();
-                    // temp.add(leftStickMesh);
-                    // temp.rotation.y=Math.PI/4;
-                  }
-                }
-              }
-            });
+          // leapController = Leap.loop()
+          //   .use('proximity')
+          //   .use('handHold')
+          //   .use('transform',{
+          //     position : new THREE.Vector3(0,15,0),
+          //     scale : getParam('scale')
+          //   })
+          //   .use('handEntry')
+          //   .use('screenPosition')
+          //   .use('riggedHand', {
+          //     parent : scene,
+          //     renderer : renderer,
+          //     camera : camera,
+          //     renderFn : function(){
+          //       renderer.render(scene,camera);
+          //       // return leapController.update();
+          //     }
+          //   }).on('frame',function(frame){
+          //     var hands = frame.hands;
+          //     if(hands != null && hands.length > 0){
+          //       for(var i=0;i<hands.length;i++){
+          //         console.log(hands[i]);
+          //         var type = hands[i].type;
+          //         var posArr = hands[i].palmPosition;
+          //         var vec3 = new THREE.Vector3(posArr[0],posArr[1],posArr[2]);
+          //         // vec3.unproject(camera);
+          //         var grabStrength = hands[i].grabStrength;
+          //         console.log(hands[i].grabStrength);
+          //         if(grabStrength >= 0.95){
+          //           console.log(type);
+          //           if(type == "left"){
+          //             leftStickMesh.position.copy(vec3);
+          //             leftStickMesh.rotation.x = -Math.PI/3;
+          //           }else if(type == "right"){
+          //             rightStickMesh.position.copy(vec3);
+          //             rightStickMesh.rotation.x = -Math.PI/3;
+          //           }
+          //           // var temp=new THREE.Object3D();
+          //           // temp.add(leftStickMesh);
+          //           // temp.rotation.y=Math.PI/4;
+          //         }
+          //       }
+          //     }
+          //   });
 
           new InteractablePlane(collider, Leap.loopController);
           console.log(leapController);
