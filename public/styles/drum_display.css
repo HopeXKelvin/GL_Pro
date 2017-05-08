@@ -3,3 +3,13 @@ body{
   padding: 0;
   overflow: hidden;
 }
+
+.info-box{
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 200px;
+  width: 200px;
+  background-color: #fff;
+  color: #000;
+}

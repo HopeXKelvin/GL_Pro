@@ -28,29 +28,29 @@ var audioDomList = (function(){
   return domList;
 })();
 
-(window.controller = new Leap.Controller)
-    .use('transform', {
-      position: new THREE.Vector3(1, 0, 0)
-    })
-    .use('handHold',{})
-    .use('screenPosition')
-    .use('handEntry',{})
-    .use('riggedHand', {
-      parent : scene,
-      renderFn : function(){
-        // renderer.render(scene,camera);
-        // return controls.update();
-      },
-      materialOptions : {
-        wireframe: getParam('wireframe'),
-        color : new THREE.Color(0xff0000)
-      },
-      offset : new THREE.Vector3(0,0,0),
-      scale : 0.2,
-      boneLabels: function(boneMesh, leapHand) {
-        return boneMesh.name
-      }
-  }).connect();
+// (window.controller = new Leap.Controller)
+//     .use('transform', {
+//       position: new THREE.Vector3(1, 0, 0)
+//     })
+//     .use('handHold',{})
+//     .use('screenPosition')
+//     .use('handEntry',{})
+//     .use('riggedHand', {
+//       parent : scene,
+//       renderFn : function(){
+//         // renderer.render(scene,camera);
+//         // return controls.update();
+//       },
+//       materialOptions : {
+//         wireframe: getParam('wireframe'),
+//         color : new THREE.Color(0xff0000)
+//       },
+//       offset : new THREE.Vector3(0,0,0),
+//       scale : 0.2,
+//       boneLabels: function(boneMesh, leapHand) {
+//         return boneMesh.name
+//       }
+//   }).connect();
 
 // 应该是一个工具函数
 function getParam(name) {
@@ -133,12 +133,12 @@ function init(){
   //THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
   var mtlLoader = new THREE.MTLLoader();
   mtlLoader.setPath('static/assets/models/');
-  mtlLoader.load('drum_all.mtl', function(materials) {
+  mtlLoader.load('drum_save_1.mtl', function(materials) {
       materials.preload();
       var objLoader = new THREE.OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath('static/assets/models/');
-      objLoader.load('drum_all.obj', function(object){
+      objLoader.load('drum_save_1.obj', function(object){
           // while(object.children[0] != null){
           // 	group.add(object.children[0]);
           // }
@@ -182,52 +182,55 @@ function init(){
           collider.position.set(0, 140, 0);
 
           collider.add(box);
-          scene.add(collider);
+          // scene.add(collider);
 
-          // leapController = Leap.loop()
-          //   .use('proximity')
-          //   .use('handHold')
-          //   .use('transform',{
-          //     position : new THREE.Vector3(0,15,0),
-          //     scale : getParam('scale')
-          //   })
-          //   .use('handEntry')
-          //   .use('screenPosition')
-          //   .use('riggedHand', {
-          //     parent : scene,
-          //     renderer : renderer,
-          //     camera : camera,
-          //     renderFn : function(){
-          //       renderer.render(scene,camera);
-          //       // return leapController.update();
-          //     }
-          //   }).on('frame',function(frame){
-          //     var hands = frame.hands;
-          //     if(hands != null && hands.length > 0){
-          //       for(var i=0;i<hands.length;i++){
-          //         console.log(hands[i]);
-          //         var type = hands[i].type;
-          //         var posArr = hands[i].palmPosition;
-          //         var vec3 = new THREE.Vector3(posArr[0],posArr[1],posArr[2]);
-          //         // vec3.unproject(camera);
-          //         var grabStrength = hands[i].grabStrength;
-          //         console.log(hands[i].grabStrength);
-          //         if(grabStrength >= 0.95){
-          //           console.log(type);
-          //           if(type == "left"){
-          //             leftStickMesh.position.copy(vec3);
-          //             leftStickMesh.rotation.x = -Math.PI/3;
-          //           }else if(type == "right"){
-          //             rightStickMesh.position.copy(vec3);
-          //             rightStickMesh.rotation.x = -Math.PI/3;
-          //           }
-          //           // var temp=new THREE.Object3D();
-          //           // temp.add(leftStickMesh);
-          //           // temp.rotation.y=Math.PI/4;
-          //         }
-          //       }
-          //     }
-          //   });
+          leapController = Leap.loop()
+            .use('proximity')
+            .use('handHold')
+            .use('transform',{
+              position : new THREE.Vector3(0,15,0),
+              scale : getParam('scale')
+            })
+            .use('handEntry')
+            .use('screenPosition')
+            .use('riggedHand', {
+              parent : scene,
+              renderer : renderer,
+              camera : camera,
+              renderFn : function(){
+                renderer.render(scene,camera);
+                // return leapController.update();
+              }
+            }).on('frame',function(frame){
+              var hands = frame.hands;
+              if(hands != null && hands.length > 0){
+                for(var i=0;i<hands.length;i++){
+                  console.log(hands[i]);
+                  var type = hands[i].type;
+                  var posArr = hands[i].palmPosition;
+                  var vec3 = new THREE.Vector3(posArr[0],posArr[1],posArr[2]);
+                  // vec3.unproject(camera);
+                  var grabStrength = hands[i].grabStrength;
+                  console.log(hands[i].grabStrength);
+                  if(grabStrength >= 0.95){
+                    console.log(type);
+                    if(type == "left"){
+                      leftStickMesh.position.copy(vec3);
+                      leftStickMesh.rotation.x = -Math.PI/3;
+                      console.log(hands[i].palmVelocity.toString());
+                      document.getElementById("leftVelocityValue").innerHTML = hands[i].palmVelocity.toString();
+                    }else if(type == "right"){
+                      rightStickMesh.position.copy(vec3);
+                      rightStickMesh.rotation.x = -Math.PI/3;
+                      document.getElementById("rightVelocityValue").innerHTML = hands[i].palmVelocity.toString();
+                    }
+                    // var temp=new THREE.Object3D();
+                    // temp.add(leftStickMesh);
+                    // temp.rotation.y=Math.PI/4;
+                  }
+                }
+              }
+            });
 
           new InteractablePlane(collider, Leap.loopController);
           console.log(leapController);
@@ -275,7 +278,7 @@ function animate(){
      if(scene.children[3] != undefined){
        var collisionResults = ray.intersectObjects(scene.children[3].children);
        if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.name != "stick"){
-        //  console.log(collisionResults);
+         console.log(collisionResults);
         //  console.log(collisionResults[0].object);
         //  collisionResults[0].object.material.materials[2].color.set(0xff0000);
         //  console.log("crash");
