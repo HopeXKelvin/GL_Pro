@@ -88,6 +88,14 @@ function init(){
   var rmaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} );
   leftStickMesh = new THREE.Mesh(geometry,material);
   rightStickMesh = new THREE.Mesh(rgeometry,rmaterial);
+  // leftStickMesh.scale.x = 10;
+  // leftStickMesh.scale.y = 10;
+  // leftStickMesh.scale.z = 10;
+
+  // 把两个鼓棒移动到较远的地方去
+  leftStickMesh.position.x = 1000;
+  rightStickMesh.position.x = 1000;
+
   leftStickMesh.name = "stick";
   scene.add(leftStickMesh);
   scene.add(rightStickMesh);
@@ -276,32 +284,37 @@ function animate(){
      var ray = new THREE.Raycaster(originPoint,directionVector.clone().normalize());
      // 检测射线与多个物体的相交情况
      if(scene.children[3] != undefined){
-       var collisionResults = ray.intersectObjects(scene.children[3].children);
+       var collisionResults = ray.intersectObjects(scene.children[3].children[1].children);
        if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.name != "stick"){
          console.log(collisionResults);
         //  console.log(collisionResults[0].object);
         //  collisionResults[0].object.material.materials[2].color.set(0xff0000);
-        //  console.log("crash");
+         collisionResults[0].object.material.color.set(0x00ff00);
+         // 500毫秒之后恢复颜色
+         setTimeout(function(){
+           collisionResults[0].object.material.color.set(0xaaaaaa);
+         },500);
+         console.log("crash");
        }
      }
    }
 
-  var intersects = raycaster.intersectObjects(drum.children);
-  // console.log(intersects.length);
-  if(intersects.length > 0){
-    for (var i=0;i < intersects.length;i++){
-      // console.log(intersects[i]);
-      intersects[0].object.material.color.set(0xff0000);
-      audioDomList[i].play();
-      // mesh.rotation.x = 0;
-      // mesh.rotation.y = 0;
-    }
-  }else{
-    // 还原颜色
-    for(let i=0;i<drum.children.length;i++){
-      drum.children[i].material.color.set(0xAAAAAA);
-    }
-  }
+  // var intersects = raycaster.intersectObjects(drum.children);
+  // // console.log(intersects.length);
+  // if(intersects.length > 0){
+  //   for (var i=0;i < intersects.length;i++){
+  //     // console.log(intersects[i]);
+  //     intersects[0].object.material.color.set(0xff0000);
+  //     audioDomList[i].play();
+  //     // mesh.rotation.x = 0;
+  //     // mesh.rotation.y = 0;
+  //   }
+  // }else{
+  //   // 还原颜色
+  //   for(let i=0;i<drum.children.length;i++){
+  //     drum.children[i].material.color.set(0xAAAAAA);
+  //   }
+  // }
   renderer.render(scene,camera);
 }
 
