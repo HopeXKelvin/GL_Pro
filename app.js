@@ -31,3 +31,8 @@ app.get('/drumdisplay',function(req,res){
 app.get('/lm_test',function(req,res){
   res.render('lm_test');
 });
+
+// 房屋设计页面路由
+app.get('/design_index', function(req,res) {
+  res.render('design_index');
+});

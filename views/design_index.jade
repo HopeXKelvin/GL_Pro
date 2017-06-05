@@ -1,0 +1,25 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title HOUSE-DESIGN|INDEX
+        link(rel='stylesheet',href='static/styles/design_index.css')
+    body
+        #app.wrapper
+            #leftArea.left-area
+                //- .design-2d-area
+            .mid-line
+            .right-area
+                #WebGL-output
+        .opt-box
+            .opt-switch
+            .opt-list
+                .opt-item 墙
+                .opt-item 窗户
+                .opt-item 门                             
+        script(src='static/scripts/lib/jquery-1.12.4.js')
+        script(src='static/scripts/lib/three.js')
+        script(src='static/scripts/lib/MTLLoader.js')
+        script(src='static/scripts/lib/OBJLoader.js')
+        script(src='static/scripts/lib/konva.js')
+        script(src='static/scripts/design_index.js')
